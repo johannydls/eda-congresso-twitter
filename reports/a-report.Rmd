@@ -1,17 +1,49 @@
 ---
-title: "REPLACE ME"
+title: "Análise das atividades dos congressistas no Twitter em 2019"
 output:
     html_document:
     df_print: paged
 theme: sandstone
 ---
-
+**Aluno: ** Johanny de Lucena Santos  
+**Atividade:** Lab 1 - Parte 2
+  
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 source(here::here("code/lib.R"))
 theme_set(theme_bw())
 ```
 
+### Lendo os dados do repositório
 ```{r read}
 atividade = read_projectdata()
 ```
+**Observação:** 
+Os dados brutos têm 72.316 tweets cuja data de criação segundo a API é em 2019. Esses tweets foram coletados em 22 de março de 2019. O script que os processa, cruza com a lista de parlamentares conhecidos e salva a atividade por parlamentar.
+  
+Com base nesse conjunto de base, elaborei duas questões para responder.  
+  
+### Filtrando apenas os parlamentares que possuem conta no Twitter
+Aqui, removo do conjunto de dados os parlamentares que não possuem conta no Twitter.  
+```{r}
+parlamentares_twitter = atividade %>%
+  filter(!is.na(twitter))
+```
+
+### Removendo os parlamentares que não têm seguidores nem segue pelo menos uma pessoa
+Fazendo uma análise visual rápida no novo conjunto de dados, é possível ver que muitos parlamentares não tem seguidores, ou não seguem algum perfil, e analisando esses, não tem dados de engajamento ou de tweets próprios ou retweets, por isso, considerei que, apesar de terem a conta no Twitter, não realizam atividades no mesmo.  
+```{r}
+parlamentares_seguidores = parlamentares_twitter %>%
+  filter(!is.na(seguidores) & !is.na(segue))
+```
+
+### Quais partidos possuem parlamentares com maior engajamento?
+```{r}
+parlamentares_seguidores %>%
+  ggplot(aes(x = partido, y = engaj_total)) +
+  geom_col() +
+  coord_flip()
+```
+
+Com base no gráfico gerado acima, podemos ver que os três partidos que possuem maior engajamento no Twitter são, em ordem decrescente, **PSL** (engajamento muito maior que o segundo colocado), **PT** e **PSOL**. Possivelmente, o fato do atual presidente do Brasil ser do partido PSL pode ter impulsionado o número de likes ou retweets nos perfis dos parlamentares deste partido.  
+  
